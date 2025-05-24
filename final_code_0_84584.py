@@ -7,35 +7,36 @@ Original file is located at
     https://colab.research.google.com/drive/1ifobVmvEBfZUV18iGOB2GNeXO8uuc8Kc
 """
 
-# Mount Google Drive
-from google.colab import drive
-drive.mount('/content/drive')
+# 掛載 Google Drive
+from google.colab import drive  # 匯入掛載 Google Drive 的模組
+drive.mount('/content/drive')  # 將 Google Drive 掛載到 Colab 的 /content/drive 目錄
 
 # 安裝必要套件
-!pip install transformers
-!pip install nltk
-!pip install matplotlib
-!pip install seaborn
+!pip install transformers  # 安裝 Hugging Face 的 transformers 套件
+!pip install nltk         # 安裝自然語言處理套件 NLTK
+!pip install matplotlib   # 安裝 Matplotlib 繪圖套件
+!pip install seaborn      # 安裝 Seaborn 資料視覺化套件
 
 # 匯入函式庫
-import pandas as pd
-import numpy as np
-import torch
-from torch.utils.data import DataLoader, Dataset
-from transformers import RobertaTokenizer, RobertaForSequenceClassification
-from torch.optim import AdamW
-from transformers import get_scheduler
-from sklearn.model_selection import StratifiedKFold
-from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, roc_curve, confusion_matrix, classification_report
-from tqdm import tqdm
-import nltk
-import matplotlib.pyplot as plt
-import seaborn as sns
-from collections import defaultdict
+import pandas as pd  # 匯入 pandas 資料分析套件，簡稱 pd，以便進行資料讀取與操作
+import numpy as np  # 匯入 NumPy 數值運算套件，簡稱 np，用於陣列及矩陣運算
+import torch  # 匯入 PyTorch 深度學習框架，用於模型建立與張量運算
+from torch.utils.data import DataLoader, Dataset  # 匯入 DataLoader 批次載入工具與 Dataset 資料集基底類別
+from transformers import RobertaTokenizer, RobertaForSequenceClassification  # 匯入 RoBERTa 分詞器與，用於文本分類的預訓練模型
+from torch.optim import AdamW  # 匯入 AdamW 最佳化器，支援權重衰減正則化
+from transformers import get_scheduler  # 匯入學習率排程器生成函式，用於動態調整學習率
+from sklearn.model_selection import StratifiedKFold  # 匯入分層抽樣的 K 折交叉驗證工具
+from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, roc_curve, confusion_matrix, classification_report  # 匯入多種評估指標與報表函式
+from tqdm import tqdm  # 匯入進度條顯示套件，用於在迴圈中追蹤執行進度
+import nltk  # 匯入自然語言處理套件 NLTK，用於文字前處理
+import matplotlib.pyplot as plt  # 匯入 Matplotlib 的 pyplot，簡稱 plt，用於繪製圖表
+import seaborn as sns  # 匯入 Seaborn 資料視覺化套件，用於美化圖表
+from collections import defaultdict  # 匯入 defaultdict，方便建立具有預設值的字典
 
-nltk.download('stopwords')
-nltk.download('punkt')
-from nltk.corpus import stopwords
+# 下載 NLTK 資源
+nltk.download('stopwords')  # 下載停用詞列表，用於移除常見無意義詞彙
+nltk.download('punkt')     # 下載句子與詞彙切分模型，用於斷詞處理
+from nltk.corpus import stopwords  # 匯入停用詞語料庫，以便後續過濾文本中的停用詞
 
 # 設定繪圖風格
 plt.style.use('seaborn-v0_8')
@@ -78,91 +79,105 @@ fold_results = defaultdict(list)
 fold_roc_curves = []
 
 # Cross-validation + 模型平均
+# 建立分層 K 折交叉驗證，總共 5 折，並設定隨機種子以確保可重現性
 skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+# 初始化測試集預測機率矩陣，形狀為 (測試樣本數, 類別數)
 test_preds = np.zeros((len(test), 2))
 
+# 迭代每一折的訓練與驗證
 for fold, (train_idx, val_idx) in enumerate(skf.split(train_texts, train_labels)):
+    # 顯示當前折數
     print(f"\n=== Fold {fold+1} ===")
 
-    train_texts_fold = [train_texts[i] for i in train_idx]
-    train_labels_fold = [train_labels[i] for i in train_idx]
-    val_texts_fold = [train_texts[i] for i in val_idx]
-    val_labels_fold = [train_labels[i] for i in val_idx]
+    # 根據索引切分訓練集與驗證集的文字和標籤
+    train_texts_fold = [train_texts[i] for i in train_idx]  # 本折訓練文字列表
+    train_labels_fold = [train_labels[i] for i in train_idx]  # 本折訓練標籤列表
+    val_texts_fold = [train_texts[i] for i in val_idx]      # 本折驗證文字列表
+    val_labels_fold = [train_labels[i] for i in val_idx]     # 本折驗證標籤列表
 
-    train_dataset = TweetDataset(train_texts_fold, train_labels_fold)
-    val_dataset = TweetDataset(val_texts_fold, val_labels_fold)
-    test_dataset = TweetDataset(test_texts)
+    # 建立 Dataset 物件
+    train_dataset = TweetDataset(train_texts_fold, train_labels_fold)  # 訓練集
+    val_dataset = TweetDataset(val_texts_fold, val_labels_fold)   # 驗證集
+    test_dataset = TweetDataset(test_texts)  # 測試集（無標籤）
 
-    train_loader = DataLoader(train_dataset, batch_size=8, shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=8)
-    test_loader = DataLoader(test_dataset, batch_size=8)
+    # 建立 DataLoader 以批次方式讀取資料
+    train_loader = DataLoader(train_dataset, batch_size=8, shuffle=True)  # 打亂訓練集
+    val_loader = DataLoader(val_dataset, batch_size=8)  # 驗證集不打亂
+    test_loader = DataLoader(test_dataset, batch_size=8)  # 測試集
 
+    # 載入預訓練 RoBERTa 分類模型並設定輸出類別數為 2
     model = RobertaForSequenceClassification.from_pretrained("roberta-large", num_labels=2)
-    model.to(device)
+    model.to(device)  # 將模型移到指定裝置（GPU 或 CPU）
 
-    optimizer = AdamW(model.parameters(), lr=2e-5)
-    num_training_steps = len(train_loader) * 3
-    lr_scheduler = get_scheduler("linear", optimizer=optimizer, num_warmup_steps=0,
-                                 num_training_steps=num_training_steps)
+    # 設定優化器與學習率排程器
+    optimizer = AdamW(model.parameters(), lr=2e-5)  # 使用 AdamW 優化器，學習率 2e-5
+    num_training_steps = len(train_loader) * 3     # 總訓練步數：批次數 × Epoch 數
+    lr_scheduler = get_scheduler(
+        "linear", optimizer=optimizer, num_warmup_steps=0,
+        num_training_steps=num_training_steps     # 線性遞減學習率排程
+    )
 
-    # 儲存訓練歷史
-    train_losses = []
-    val_accuracies = []
-    val_f1_scores = []
+    # 建立用於記錄訓練與驗證歷史的清單
+    train_losses = []       # 每個 Epoch 的訓練損失
+    val_accuracies = []     # 每個 Epoch 的驗證準確率
+    val_f1_scores = []      # 每個 Epoch 的驗證 F1 分數
 
-    # 訓練
+    # 訓練迴圈：總共 3 個 Epoch
     for epoch in range(3):
         print(f"Epoch {epoch + 1}")
-        model.train()
-        epoch_losses = []
+        model.train()       # 切換模型至訓練模式
+        epoch_losses = []   # 暫存本 Epoch 所有批次的損失
 
-        loop = tqdm(train_loader, leave=True)
+        loop = tqdm(train_loader, leave=True)  # 包裝進度條
         for batch in loop:
+            # 將輸入與標籤移到對應裝置
             batch = {k: v.to(device) for k, v in batch.items()}
-            outputs = model(**batch)
-            loss = outputs.loss
-            loss.backward()
-            optimizer.step()
-            lr_scheduler.step()
-            optimizer.zero_grad()
+            outputs = model(**batch)   # 前向傳播
+            loss = outputs.loss     # 取得損失值
+            loss.backward()   # 反向傳播
+            optimizer.step()  # 更新模型參數
+            lr_scheduler.step()   # 更新學習率
+            optimizer.zero_grad()  # 清空梯度
 
-            epoch_losses.append(loss.item())
-            loop.set_postfix(loss=loss.item())
+            epoch_losses.append(loss.item())   # 儲存損失數值
+            loop.set_postfix(loss=loss.item()) # 更新進度條顯示
 
+        # 計算並記錄本 Epoch 的平均訓練損失
         avg_train_loss = np.mean(epoch_losses)
         train_losses.append(avg_train_loss)
 
-        # 驗證
-        model.eval()
-        val_preds = []
-        val_probs = []
-        val_true = []
+        # 驗證階段
+        model.eval()        # 切換模型至評估模式
+        val_preds, val_probs, val_true = [], [], []  # 初始化儲存預測結果與實際標籤的清單
 
-        with torch.no_grad():
+        with torch.no_grad():  # 停止梯度計算以加速
             for batch in val_loader:
                 batch = {k: v.to(device) for k, v in batch.items()}
-                outputs = model(**batch)
-                logits = outputs.logits
-                probs = torch.softmax(logits, dim=1).cpu().numpy()
-                preds = np.argmax(probs, axis=1)
+                outputs = model(**batch)            # 前向傳播
+                logits = outputs.logits             # 取得輸出分數
+                probs = torch.softmax(logits, dim=1).cpu().numpy()  # 計算類別機率並移回 CPU
+                preds = np.argmax(probs, axis=1)     # 取最大機率的索引作為預測
 
-                val_preds.extend(preds)
-                val_probs.extend(probs[:, 1])  # 正類別的機率
-                val_true.extend(batch['labels'].cpu().numpy())
+                val_preds.extend(preds)              # 累加預測標籤
+                val_probs.extend(probs[:, 1])        # 累加正類機率
+                val_true.extend(batch['labels'].cpu().numpy())  # 累加真實標籤
 
-        # 計算指標
+        # 計算並記錄本 Epoch 的驗證評估指標
         val_accuracy = accuracy_score(val_true, val_preds)
         val_f1 = f1_score(val_true, val_preds, average='weighted')
         val_accuracies.append(val_accuracy)
         val_f1_scores.append(val_f1)
 
-        print(f"Epoch {epoch + 1} - Train Loss: {avg_train_loss:.4f}, Val Acc: {val_accuracy:.4f}, Val F1: {val_f1:.4f}")
+        print(
+            f"Epoch {epoch + 1} - "
+            f"Train Loss: {avg_train_loss:.4f}, "
+            f"Val Acc: {val_accuracy:.4f}, "
+            f"Val F1: {val_f1:.4f}"
+        )
 
-    # 最終驗證評估
+    # 最終驗證評估：在驗證集上做完整一次前向傳播以獲取最終指標
     model.eval()
-    final_val_preds = []
-    final_val_probs = []
-    final_val_true = []
+    final_val_preds, final_val_probs, final_val_true = [], [], []
 
     with torch.no_grad():
         for batch in val_loader:
@@ -176,12 +191,12 @@ for fold, (train_idx, val_idx) in enumerate(skf.split(train_texts, train_labels)
             final_val_probs.extend(probs[:, 1])
             final_val_true.extend(batch['labels'].cpu().numpy())
 
-    # 計算最終指標
+    # 計算最終的 Accuracy、F1 與 ROC AUC
     final_accuracy = accuracy_score(final_val_true, final_val_preds)
     final_f1 = f1_score(final_val_true, final_val_preds, average='weighted')
     final_roc_auc = roc_auc_score(final_val_true, final_val_probs)
 
-    # 儲存結果
+    # 將本折結果儲存至字典
     fold_results['accuracy'].append(final_accuracy)
     fold_results['f1'].append(final_f1)
     fold_results['roc_auc'].append(final_roc_auc)
@@ -189,21 +204,22 @@ for fold, (train_idx, val_idx) in enumerate(skf.split(train_texts, train_labels)
     fold_results['val_accuracies'].append(val_accuracies)
     fold_results['val_f1_scores'].append(val_f1_scores)
 
-    # 儲存 ROC 曲線資料
+    # 計算並儲存 ROC 曲線資料
     fpr, tpr, _ = roc_curve(final_val_true, final_val_probs)
     fold_roc_curves.append((fpr, tpr, final_roc_auc))
 
-    # 儲存混淆矩陣
+    # 計算並儲存混淆矩陣
     cm = confusion_matrix(final_val_true, final_val_preds)
     fold_results['confusion_matrices'].append(cm)
 
+    # 顯示本折最終結果報表
     print(f"Fold {fold+1} Results:")
     print(f"Accuracy: {final_accuracy:.4f}")
     print(f"F1 Score: {final_f1:.4f}")
     print(f"ROC AUC: {final_roc_auc:.4f}")
     print(f"Classification Report:\n{classification_report(final_val_true, final_val_preds)}")
 
-    # 預測 test
+    # 使用訓練好的模型對測試集進行預測
     fold_preds = []
     with torch.no_grad():
         for batch in test_loader:
@@ -213,13 +229,14 @@ for fold, (train_idx, val_idx) in enumerate(skf.split(train_texts, train_labels)
             probs = torch.softmax(logits, dim=1).cpu().numpy()
             fold_preds.append(probs)
 
+    # 合併每批預測並累加到測試總預測矩陣（取平均）
     fold_preds = np.vstack(fold_preds)
-    test_preds += fold_preds / 5
+    test_preds += fold_preds / 5  # 5 折平均
 
-# 最終預測
+# 取得最終測試集預測標籤
 final_preds = np.argmax(test_preds, axis=1)
-submission['target'] = final_preds
-submission.to_csv("submission_cv_ensemble.csv", index=False)
+submission['target'] = final_preds  # 填入提交檔
+submission.to_csv("submission_cv_ensemble.csv", index=False)  # 儲存提交檔
 print("✅ submission_cv_ensemble.csv 儲存完成")
 
 # 繪製結果圖表
