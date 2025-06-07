@@ -44,38 +44,60 @@
 
 ---
 
-## 🏆 最高分程式碼完整版（`最高分程式碼完整版/`）
+當然可以，以下是將「內容包含」部分依照 `py/` 與 `ipynb/` 資料夾分開撰寫後的 README 內容：
 
-此資料夾為目前表現最佳的模型版本，包含：
+---
 
-- `20_cosine_scheduler_maxlen128(0_85167_0_84952).py`：第20版的完整 Python 腳本
-- `20_cosine_scheduler_maxlen128(0_85167_0_84952).ipynb`：第20版的 Jupyter Notebook
-- `資料探索.py` / `資料探索.ipynb`：資料探索程式碼
-- `requirements.txt`：所需套件列表
-- `train.csv`：訓練資料集
-- `test.csv`：測試資料集
-- `sample_submission.csv`：提交範例格式
+## 🏆 最高分程式碼完整版（[`最高分程式碼完整版/`](https://github.com/Ting-liu0103/Natural-Language-Processing-with-Disaster-Tweets-team4-finalproject/tree/main/%E6%9C%80%E9%AB%98%E5%88%86%E7%A8%8B%E5%BC%8F%E7%A2%BC%E5%AE%8C%E6%95%B4%E7%89%88)）
 
-### 使用方式：
+此資料夾包含兩個子資料夾：`py/` 和 `ipynb/`，兩者內容相同，僅程式碼格式不同。使用者可根據偏好選擇使用 Python 腳本或 Jupyter Notebook。
 
-1. 下載所要使用的資料夾(py or ipynb)，並確保所有檔案皆在同個資料夾。
+### 📂 py/ 資料夾內容
+
+* `20_cosine_scheduler_maxlen128(0_85167_0_84952).py`：第20版的完整訓練腳本（最高分模型）
+* `資料探索.py`：資料探索與前處理程式碼
+* `requirements.txt`：本資料夾所需 Python 套件安裝清單
+* `train.csv`：訓練資料集
+* `test.csv`：測試資料集
+* `sample_submission.csv`：Kaggle 提交格式範例
+
+### 📂 ipynb/ 資料夾內容
+
+* `20_cosine_scheduler_maxlen128(0_85167_0_84952).ipynb`：第20版的完整 Jupyter Notebook（最高分模型）
+* `資料探索.ipynb`：資料探索與前處理程式碼
+* `requirements.txt`：本資料夾所需 Python 套件安裝清單
+* `train.csv`：訓練資料集
+* `test.csv`：測試資料集
+* `sample_submission.csv`：Kaggle 提交格式範例
+
+---
+
+### 🚀 使用方式
+
+1. 安裝所需套件：
+
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 2. 執行模型：
 
-   * 使用 Python 腳本：
+   * 使用 `py/`：
 
      ```bash
+     cd py/
      python 20_cosine_scheduler_maxlen128(0_85167_0_84952).py
      ```
 
-   * 或使用 Jupyter Notebook：
+   * 使用 `ipynb/`：
 
      ```bash
+     cd ipynb/
      jupyter notebook 20_cosine_scheduler_maxlen128(0_85167_0_84952).ipynb
      ```
 
-執行後，模型將自動進行資料載入、訓練與預測，並輸出結果。
-備註:請注意路徑問題，路徑可以依情況做修改。
+執行後，程式將自動進行資料載入、前處理、訓練與預測，並產生輸出結果。
+
 
 ---
 
