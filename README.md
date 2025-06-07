@@ -25,7 +25,7 @@
 
 ---
 
-## 📂 資料集（`data/`）data
+## 📂 資料集（[`data/`](https://github.com/Ting-liu0103/Natural-Language-Processing-with-Disaster-Tweets-team4-finalproject/tree/main/data)）
 
 - `train.csv`：訓練資料集
 - `test.csv`：測試資料集
@@ -33,7 +33,7 @@
 
 ---
 
-## 🧪 不同訓練結果[`不同訓練結果/`](https://github.com/Ting-liu0103/Natural-Language-Processing-with-Disaster-Tweets-team4-finalproject/tree/main/%E4%B8%8D%E5%90%8C%E8%A8%93%E7%B7%B4%E7%B5%90%E6%9E%9C)）
+## 🧪 不同訓練結果 ([`不同訓練結果/`](https://github.com/Ting-liu0103/Natural-Language-Processing-with-Disaster-Tweets-team4-finalproject/tree/main/%E4%B8%8D%E5%90%8C%E8%A8%93%E7%B7%B4%E7%B5%90%E6%9E%9C)）
 
 此資料夾包含多個訓練版本的結果，每個版本皆包含：
 
@@ -101,13 +101,13 @@
 
 ---
 
-## 🔁 Checkpoint3 相關（`checkpiont3相關/`checkpiont3相關）
+## 🔁 Checkpoint3 相關（[`checkpiont3相關/`](https://github.com/Ting-liu0103/Natural-Language-Processing-with-Disaster-Tweets-team4-finalproject/tree/main/checkpiont3%E7%9B%B8%E9%97%9C)）
 
 此資料夾包含在專案第三階段（Checkpoint3）中使用的程式碼與相關資源，供參考與使用。
 
 ---
 
-## 🧱 原始版本（`原始版本/`）
+## 🧱 原始版本（[`原始版本/`](https://github.com/Ting-liu0103/Natural-Language-Processing-with-Disaster-Tweets-team4-finalproject/tree/main/%E5%8E%9F%E5%A7%8B%E7%89%88%E6%9C%AC)）
 
 此資料夾提供專案的最基礎版本，適合初學者或希望從零開始理解專案架構的使用者。包含：
 
