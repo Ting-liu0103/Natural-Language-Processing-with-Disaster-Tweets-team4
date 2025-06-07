@@ -44,9 +44,6 @@
 
 ---
 
-當然可以，以下是將「內容包含」部分依照 `py/` 與 `ipynb/` 資料夾分開撰寫後的 README 內容：
-
----
 
 ## 🏆 最高分程式碼完整版（[`最高分程式碼完整版/`](https://github.com/Ting-liu0103/Natural-Language-Processing-with-Disaster-Tweets-team4-finalproject/tree/main/%E6%9C%80%E9%AB%98%E5%88%86%E7%A8%8B%E5%BC%8F%E7%A2%BC%E5%AE%8C%E6%95%B4%E7%89%88)）
 
