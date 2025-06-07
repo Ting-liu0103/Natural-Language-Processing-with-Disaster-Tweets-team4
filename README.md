@@ -64,7 +64,7 @@
 ### 📂 py/ 資料夾內容
 
 * `20_cosine_scheduler_maxlen128(0_85167_0_84952).py`：第20版的完整訓練腳本（最高分模型）
-* `資料探索.py`：資料探索與前處理程式碼
+* `資料探索.py`：資料探索程式碼，使用者可透過運行此份檔案觀察資料集內容與狀況
 * `requirements.txt`：本資料夾所需 Python 套件安裝清單
 * `train.csv`：訓練資料集
 * `test.csv`：測試資料集
@@ -73,7 +73,7 @@
 ### 📂 ipynb/ 資料夾內容
 
 * `20_cosine_scheduler_maxlen128(0_85167_0_84952).ipynb`：第20版的完整 Jupyter Notebook（最高分模型）
-* `資料探索.ipynb`：資料探索與前處理程式碼
+* `資料探索.ipynb`：資料探索程式碼，使用者可透過運行此份檔案觀察資料集內容與狀況
 * `requirements.txt`：本資料夾所需 Python 套件安裝清單
 * `train.csv`：訓練資料集
 * `test.csv`：測試資料集
