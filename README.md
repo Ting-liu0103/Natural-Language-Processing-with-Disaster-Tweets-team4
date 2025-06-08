@@ -26,7 +26,7 @@
 
 ---
 
-## 📂 資料集（[`data/`](https://github.com/Ting-liu0103/Natural-Language-Processing-with-Disaster-Tweets-team4-finalproject/tree/main/data)）
+## 📂 Kaggle提供的資料集（[`data/`](https://github.com/Ting-liu0103/Natural-Language-Processing-with-Disaster-Tweets-team4-finalproject/tree/main/data)）
 
 - `train.csv`：訓練資料集
 - `test.csv`：測試資料集
